@@ -1,5 +1,38 @@
 # ArgoCD PoC Infrastructure Repository
 
+## Architecture Overview
+
+```mermaid
+flowchart TD
+    subgraph GitHub[GitHub Repositories]
+        direction TB
+        App[laura-app<br/>Source Code & Chart]:::app
+        Config[gitops-config<br/>Environment Values]:::config
+        Hub[argocd-hub<br/>AppProject & Applications]:::hub
+    end
+
+    subgraph HubCluster[Hub Cluster (argocd-hub)]
+        ArgoCD[ArgoCD Control Plane]:::hubcomp
+    end
+
+    subgraph SpokeClusters[Spoke Clusters]
+        Prod[laura-app-prod]:::spoke
+        Stg[laura-app-stg]:::spoke
+    end
+
+    App -->|Helm Chart| ArgoCD
+    Config -->|Values| ArgoCD
+    Hub -->|App Definitions| ArgoCD
+    ArgoCD -->|Deploys| Prod
+    ArgoCD -->|Deploys| Stg
+
+    classDef app fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef config fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef hub fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef hubcomp fill:#ffffff,stroke:#2e7d32,stroke-width:2px;
+    classDef spoke fill:#fce4ec,stroke:#c2185b,stroke-width:2px;
+```
+
 This repository contains all the infrastructure-as-code (IaC) and auxiliary files used to create the Proof of Concept (PoC) for a Hub-and-Spoke ArgoCD deployment.
 
 ## 📦 Contents
