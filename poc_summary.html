@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PoC Architecture Summary</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    body { font-family: 'JetBrains Mono', monospace; background: #020617; color: white; padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; background: rgba(15, 23, 42, 0.5); padding: 2rem; border-radius: 1rem; border: 1px solid #1e293b; }
+    h1 { color: #22d3ee; }
+    .mermaid { background: white; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ArgoCD Hub-and-Spoke PoC</h1>
+    <p>Centralized GitOps Control Plane for Remote Cluster Management.</p>
+    <div class="mermaid">
+    graph TD
+        subgraph GitHub_Repos [GitHub Repositories]
+            AppRepo[App Source Repos <br/>'What']
+            HubRepo[Hub Mgmt Repo <br/>'How']
+            ConfigRepo[Config Repo <br/>'Where']
+        end
+
+        subgraph Hub_Cluster [Management Cluster - Hub]
+            ArgoCD[ArgoCD Control Plane]
+            AppSet[Application Logic]
+        end
+
+        subgraph Spoke_Clusters [Remote Clusters - Spokes]
+            Prod[Laura-App-Prod Cluster]
+            Stg[Laura-App-Stg Cluster]
+        end
+
+        AppRepo --> ArgoCD
+        HubRepo --> ArgoCD
+        ConfigRepo --> ArgoCD
+        ArgoCD --> AppSet
+        AppSet --> Prod
+        AppSet --> Stg
+    </div>
+    <h3>Key Components</h3>
+    <ul>
+      <li><strong>App Repos:</strong> Containerized laura-app and future payment-app.</li>
+      <li><strong>Hub Repo:</strong> Governance policies and App definitions.</li>
+      <li><strong>Config Repo:</strong> Environment variables for Prod/Staging.</li>
+    </ul>
+  </div>
+  <script>mermaid.initialize({startOnCVS:true});</script>
+</body>
+</html>

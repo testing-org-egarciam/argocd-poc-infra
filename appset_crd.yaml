@@ -1,0 +1,103 @@
+    app.kubernetes.io/name: applicationsets.argoproj.io
+    app.kubernetes.io/part-of: argocd
+  name: applicationsets.argoproj.io
+spec:
+  group: argoproj.io
+  names:
+    kind: ApplicationSet
+    listKind: ApplicationSetList
+    plural: applicationsets
+    shortNames:
+    - appset
+    - appsets
+    singular: applicationset
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              applyNestedSelectors:
+                type: boolean
+              generators:
+                items:
+                  properties:
+                    clusterDecisionResource:
+                      properties:
+                        configMapRef:
+                          type: string
+                        labelSelector:
+                          properties:
+                            matchExpressions:
+                              items:
+                                properties:
+                                  key:
+                                    type: string
+                                  operator:
+                                    type: string
+                                  values:
+                                    items:
+                                      type: string
+                                    type: array
+                                    x-kubernetes-list-type: atomic
+                                required:
+                                - key
+                                - operator
+                                type: object
+                              type: array
+                              x-kubernetes-list-type: atomic
+                            matchLabels:
+                              additionalProperties:
+                                type: string
+                              type: object
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        name:
+                          type: string
+                        requeueAfterSeconds:
+                          format: int64
+                          type: integer
+                        template:
+                          properties:
+                            metadata:
+                              properties:
+                                annotations:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                                finalizers:
+                                  items:
+                                    type: string
+                                  type: array
+                                labels:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                                name:
+                                  type: string
+                                namespace:
+                                  type: string
+                              type: object
+                            spec:
+                              properties:
+                                destination:
+                                  properties:
+                                    name:
+                                      type: string
+                                    namespace:
+                                      type: string
+                                    server:
+                                      type: string
+                                  type: object
+                                ignoreDifferences:
+                                  items:
+                                    properties:
+                                      group:

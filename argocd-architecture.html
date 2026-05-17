@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArgoCD Hub-and-Spoke Architecture - Repository Strategy</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'JetBrains Mono', monospace; background: #020617; min-height: 100vh; padding: 2rem; color: white; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container { background: rgba(15, 23, 42, 0.5); border-radius: 1rem; border: 1px solid #1e293b; padding: 1.5rem; overflow-x: auto; }
+    svg { width: 100%; min-width: 1100px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>ArgoCD Hub-and-Spoke Architecture</h1>
+      </div>
+      <p class="subtitle">Centralized GitOps Control Plane with Multi-Repo Strategic Separation</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1100 600">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- REPOSITORY LAYER (EXTERNAL) -->
+        <text x="50" y="80" fill="white" font-size="14" font-weight="700">Source of Truth (GitHub)</text>
+        
+        <!-- 1. Application Source Repo (The "What") -->
+        <rect x="50" y="110" width="200" height="80" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="150" y="135" fill="white" font-size="12" font-weight="600" text-anchor="middle">App Source Repos</text>
+        <text x="150" y="155" fill="#94a3b8" font-size="9" text-anchor="middle">(One per Application)</text>
+        <text x="150" y="170" fill="#94a3b8" font-size="9" text-anchor="middle">Source Code + Base Helm Chart</text>
+
+        <!-- 2. Hub/Management Repo (The "How") -->
+        <rect x="50" y="210" width="200" height="80" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="150" y="235" fill="white" font-size="12" font-weight="600" text-anchor="middle">Hub Management Repo</text>
+        <text x="150" y="255" fill="#94a3b8" font-size="9" text-anchor="middle">(Exactly One Total)</text>
+        <text x="150" y="270" fill="#94a3b8" font-size="9" text-anchor="middle">AppProjects, AppSets, Argo Config</text>
+
+        <!-- 3. Environment Config Repo (The "Where") -->
+        <rect x="50" y="310" width="200" height="80" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="150" y="335" fill="white" font-size="12" font-weight="600" text-anchor="middle">Environment Config Repo</text>
+        <text x="150" y="355" fill="#94a3b8" font-size="9" text-anchor="middle">(Exactly One Total)</text>
+        <text x="150" y="370" fill="#94a3b8" font-size="9" text-anchor="middle">values-prod.yaml, values-stg.yaml</text>
+
+        <!-- HUB CLUSTER Boundary -->
+        <rect x="320" y="100" width="350" height="400" rx="12" fill="rgba(34, 211, 238, 0.05)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="332" y="118" fill="#22d3ee" font-size="10" font-weight="600">Hub Management Cluster</text>
+
+        <!-- ArgoCD Server -->
+        <rect x="390" y="180" width="210" height="100" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="495" y="205" fill="white" font-size="12" font-weight="600" text-anchor="middle">ArgoCD Control Plane</text>
+        <text x="495" y="225" fill="#94a3b8" font-size="9" text-anchor="middle">• Application Controller</text>
+        <text x="495" y="240" fill="#94a3b8" font-size="9" text-anchor="middle">• Repo Server</text>
+        <text x="495" y="255" fill="#94a3b8" font-size="9" text-anchor="middle">• API Server & UI</text>
+
+        <!-- ApplicationSet Logic -->
+        <rect x="420" y="320" width="150" height="60" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="495" y="345" fill="white" font-size="11" font-weight="600" text-anchor="middle">ApplicationSets</text>
+        <text x="495" y="360" fill="#94a3b8" font-size="9" text-anchor="middle">Dynamic Cluster Mapping</text>
+
+        <!-- SPOKE CLUSTER 1 -->
+        <rect x="750" y="120" width="250" height="160" rx="12" fill="rgba(251, 191, 36, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="762" y="138" fill="#fbbf24" font-size="10" font-weight="600">Remote Cluster: Production</text>
+        
+        <rect x="780" y="160" width="190" height="60" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="875" y="185" fill="white" font-size="11" font-weight="600" text-anchor="middle">Workload A (Svc+Dep)</text>
+        <text x="875" y="200" fill="#94a3b8" font-size="9" text-anchor="middle">Sourced: App Repo + Prod Config</text>
+
+        <!-- SPOKE CLUSTER 2 -->
+        <rect x="750" y="320" width="250" height="160" rx="12" fill="rgba(251, 191, 36, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="762" y="338" fill="#fbbf24" font-size="10" font-weight="600">Remote Cluster: Staging</text>
+        
+        <rect x="780" y="360" width="190" height="60" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="875" y="385" fill="white" font-size="11" font-weight="600" text-anchor="middle">Workload B (Svc+Dep)</text>
+        <text x="875" y="400" fill="#94a3b8" font-size="9" text-anchor="middle">Sourced: App Repo + Staging Config</text>
+
+        <!-- ARROWS -->
+        <!-- App Repo to Hub -->
+        <line x1="250" y1="150" x2="388" y2="210" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="300" y="170" fill="#94a3b8" font-size="9" text-anchor="middle">Pull Manifests</text>
+
+        <!-- Hub Repo to Hub -->
+        <line x1="250" y1="250" x2="388" y2="230" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="300" y="230" fill="#22d3ee" font-size="9" text-anchor="middle">Pull Governance</text>
+
+        <!-- Config Repo to Hub -->
+        <line x1="250" y1="350" x2="388" y2="270" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="300" y="310" fill="#a78bfa" font-size="9" text-anchor="middle">Pull Env Values</text>
+
+        <!-- Hub to AppSet -->
+        <line x1="495" y1="280" x2="495" y2="318" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+        <!-- AppSet to Clusters -->
+        <path d="M 570 350 L 748 200" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path d="M 570 350 L 748 380" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="660" y="270" fill="#34d399" font-size="9" text-anchor="middle">Deploy to Prod</text>
+        <text x="660" y="370" fill="#34d399" font-size="9" text-anchor="middle">Deploy to Staging</text>
+
+        <!-- LEGEND -->
+        <text x="70" y="480" fill="white" font-size="10" font-weight="600">Legend</text>
+        <rect x="70" y="492" width="16" height="10" rx="2" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="92" y="500" fill="#94a3b8" font-size="8">GitHub Repo</text>
+        <rect x="70" y="508" width="16" height="10" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="92" y="516" fill="#94a3b8" font-size="8">K8s Resource</text>
+        <rect x="70" y="524" width="16" height="10" rx="2" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="92" y="532" fill="#94a3b8" font-size="8">Logic / Controller</text>
+        <rect x="70" y="540" width="16" height="10" rx="2" fill="transparent" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="92" y="548" fill="#94a3b8" font-size="8">Remote Cluster Boundary</text>
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>The App Repos (What)</h3>
+        </div>
+        <ul>
+          <li>• One repository per microservice/app</li>
+          <li>• contains: Dockerfile, src, and base Helm chart</li>
+          <li>• Changes trigger CI build &nbsp;$\rightarrow$ image register</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>The Hub Repo (How)</h3>
+        </div>
+        <ul>
+          <li>• Single repo for global orchestration</li>
+          <li>• contains: AppProject and ApplicationSet yaml</li>
+          <li>• Defines the mapping logic (Generator)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>The Config Repo (Where)</h3>
+        </div>
+        <ul>
+          <li>• Single repo for all environment variables</li>
+          <li>• contains: environment.yaml / values.yaml</li>
+          <li>• Allows fleet-wide updates via a single PR</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">
+      ArgoCD Strategic Multi-Repo Architecture • 2026
+    </p>
+  </div>
+</body>
+</html>
