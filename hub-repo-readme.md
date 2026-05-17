@@ -105,10 +105,10 @@ This ensures the cluster state always reflects the Git state.
 
 ## 📚 Related Documentation
 
-- [PoC Summary (Markdown)](../poc_summary.md)
-- [PoC Summary (HTML)](../poc_summary.html)
-- [Application Source Repo](../laura-app/README.md)
-- [Environment Config Repo](../gitops-config/README.md)
+- [PoC Summary (Markdown)](poc_summary.md)
+- [PoC Summary (HTML)](poc_summary.html)
+- [Application Source Repo](https://github.com/testing-org-egarciam/laura-app/blob/main/README.md)
+- [Environment Config Repo](https://github.com/testing-org-egarciam/gitops-config/blob/main/README.md)
 
 ---
 *This repository is the "brain" of the operation: it decides what gets deployed, where, and by whom. Keep it under strict change control (e.g., protected branch, PR reviews).*
