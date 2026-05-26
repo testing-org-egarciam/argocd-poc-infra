@@ -6,7 +6,7 @@
 flowchart TD
     subgraph GitHub ["GitHub Repositories"]
         direction TB
-        App["App Repos<br/>(laura-app, printolito)"]:::app
+        App["App Repos<br/>(laura-app, printolito, nginx-app)"]:::app
         Config["gitops-config<br/>Environment Values"]:::config
         Hub["argocd-hub<br/>AppProjects & AppSets"]:::hub
     end
@@ -87,7 +87,7 @@ This repository contains all the infrastructure-as-code (IaC) and auxiliary file
 
 | Repository | Purpose |
 | :--- | :--- |
-| `laura-app` / `printolito` | Application source repos (The "What") — contains the Helm chart for the Laura app. |
+| `laura-app`, `printolito`, `nginx-app` | Application source repos (The "What") — contains the Helm chart for the Laura app. |
 | `gitops-config` | Environment config repo (The "Where") — contains environment-specific values (e.g., `values/laura-app/prod.yaml`). |
 | `argocd-hub` | Hub management repo (The "How") — contains the `AppProject` and `Application` manifests. |
 | `argocd-poc-infra` | This repo — infrastructure and auxiliary files for the PoC. |
