@@ -4,27 +4,29 @@
 
 ```mermaid
 flowchart TD
-    subgraph GitHub[GitHub Repositories]
+    subgraph GitHub ["GitHub Repositories"]
         direction TB
-        App[laura-app<br/>Source Code & Chart]:::app
-        Config[gitops-config<br/>Environment Values]:::config
-        Hub[argocd-hub<br/>AppProject & Applications]:::hub
+        App["App Repos<br/>(laura-app, printolito)"]:::app
+        Config["gitops-config<br/>Environment Values"]:::config
+        Hub["argocd-hub<br/>AppProjects & AppSets"]:::hub
     end
 
-    subgraph HubCluster[Hub Cluster (argocd-hub)]
-        ArgoCD[ArgoCD Control Plane]:::hubcomp
+    subgraph HubCluster ["Hub Cluster (argocd-hub)"]
+        ArgoCD["ArgoCD Control Plane"]:::hubcomp
     end
 
-    subgraph SpokeClusters[Spoke Clusters]
-        Prod[laura-app-prod]:::spoke
-        Stg[laura-app-stg]:::spoke
+    subgraph SpokeClusters ["Spoke Clusters"]
+        Prod["laura-app-prod"]:::spoke
+        Stg["laura-app-stg"]:::spoke
+        Printolito["printolito-prod"]:::spoke
     end
 
-    App -->|Helm Chart| ArgoCD
+    App -->|Helm Charts| ArgoCD
     Config -->|Values| ArgoCD
-    Hub -->|App Definitions| ArgoCD
+    Hub -->|AppSets Definitions| ArgoCD
     ArgoCD -->|Deploys| Prod
     ArgoCD -->|Deploys| Stg
+    ArgoCD -->|Deploys| Printolito
 
     classDef app fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
     classDef config fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
@@ -55,6 +57,7 @@ This repository contains all the infrastructure-as-code (IaC) and auxiliary file
    kind create cluster --name argocd-hub --config cluster-configs/hub-cluster.yaml
    kind create cluster --name laura-app-prod --config cluster-configs/prod-cluster.yaml
    kind create cluster --name laura-app-stg --config cluster-configs/stg-cluster.yaml
+   kind create cluster --name printolito-prod --config cluster-configs/printolito-cluster.yaml
    ```
    (Adjust cluster names as desired.)
 
@@ -62,6 +65,7 @@ This repository contains all the infrastructure-as-code (IaC) and auxiliary file
    ```bash
    kubectl config view --context kind-laura-app-prod > kubeconfigs/prod-kubeconfig.yaml
    kubectl config view --context kind-laura-app-stg > kubeconfigs/stg-kubeconfig.yaml
+   kubectl config view --context kind-printolito-prod > kubeconfigs/printolito-kubeconfig.yaml
    ```
 
 3. **Create Cluster Secrets** in the ArgoCD namespace on the hub cluster:
@@ -83,7 +87,7 @@ This repository contains all the infrastructure-as-code (IaC) and auxiliary file
 
 | Repository | Purpose |
 | :--- | :--- |
-| `laura-app` | Application source repo (The "What") — contains the Helm chart for the Laura app. |
+| `laura-app` / `printolito` | Application source repos (The "What") — contains the Helm chart for the Laura app. |
 | `gitops-config` | Environment config repo (The "Where") — contains environment-specific values (e.g., `values/laura-app/prod.yaml`). |
 | `argocd-hub` | Hub management repo (The "How") — contains the `AppProject` and `Application` manifests. |
 | `argocd-poc-infra` | This repo — infrastructure and auxiliary files for the PoC. |
