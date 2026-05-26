@@ -42,14 +42,10 @@ This repository contains all the infrastructure-as-code (IaC) and auxiliary file
 | `cluster-configs/` | Kind cluster configuration files for the hub and spoke clusters. |
 | `kubeconfigs/` | Exported kubeconfig files for the spoke clusters (used to create ArgoCD cluster secrets). |
 | `cluster-secrets/` | Pre-generated Kubernetes Secret manifests for registering spoke clusters with the ArgoCD Hub. |
-| `argocd-architecture.html` | High-fidelity, interactive architecture diagram of the Hub-and-Spoke model (with embedded Mermaid). |
-| `argocd-deployment-plan.md` | Detailed deployment plan explaining the architecture, responsibilities (RACI), use cases, and IaC integration. |
-| `poc_summary.md` | Concise summary of the PoC, including requirements, architecture, issues encountered, and a Mermaid diagram. |
-| `poc_summary.html` | HTML version of the PoC summary with rendered Mermaid diagram. |
-| `appset_crd*.yaml` | Various attempts to work around the ArgoCD ApplicationSet CRD size limit issue encountered during installation. |
-| `fixed_secret.yaml` | Example of a manually constructed secret for cluster registration (used during troubleshooting). |
-| `install.yaml` | The original ArgoCD installation manifest (used as a base for troubleshooting). |
-| `tmp_secret.yaml` | Temporary file used during secret creation troubleshooting. |
+| `argocd-manifests/` | Contains the ArgoCD installation manifest and CRD workarounds. |
+| `argocd-architecture.html` | High-fidelity, interactive architecture diagram of the Hub-and-Spoke model. |
+| `argocd-deployment-plan.md` | Detailed deployment plan explaining the architecture, responsibilities (RACI), etc. |
+| `poc_summary.md` | Concise summary of the PoC, including requirements, architecture, issues encountered. |
 
 ## 🔧 How to Use This Repo
 
