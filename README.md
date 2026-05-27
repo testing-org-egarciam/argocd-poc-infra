@@ -18,7 +18,7 @@ flowchart TD
     subgraph SpokeClusters ["Spoke Clusters"]
         Prod["laura-app-prod"]:::spoke
         Stg["laura-app-stg"]:::spoke
-        Printolito["printolito-prod"]:::spoke
+        Printolito["printolito-app-prod"]:::spoke
     end
 
     App -->|Helm Charts| ArgoCD
@@ -46,9 +46,9 @@ This repository contains all the infrastructure-as-code (IaC) and auxiliary file
 | `cluster-secrets/` | Pre-generated Kubernetes Secret manifests for registering spoke clusters with the ArgoCD Hub. |
 | `argocd-manifests/` | Contains the ArgoCD installation manifest and CRD workarounds. |
 
-### 🟢 Greenfield Deployment Note (printolito-prod files)
-Included in this repository are the configuration (`cluster-configs/printolito-prod-cluster.yaml`) and registration secret (`cluster-secrets/printolito-prod-secret.yaml`) for the `printolito-prod` cluster.
-- **Are they needed for a greenfield deployment?** **Yes.** If you are spinning up this environment from scratch locally, you must apply the `printolito-prod-cluster.yaml` configuration to provision the `kind` cluster with the correct `fs.inotify.max_user_instances=8192` limits to prevent `kube-proxy` crashes. You then must apply the `printolito-prod-secret.yaml` to the Hub cluster so ArgoCD knows how to deploy to it.
+### 🟢 Greenfield Deployment Note (printolito-app-prod files)
+Included in this repository are the configuration (`cluster-configs/printolito-app-prod-cluster.yaml`) and registration secret (`cluster-secrets/printolito-app-prod-secret.yaml`) for the `printolito-app-prod` cluster.
+- **Are they needed for a greenfield deployment?** **Yes.** If you are spinning up this environment from scratch locally, you must apply the `printolito-app-prod-cluster.yaml` configuration to provision the `kind` cluster with the correct `fs.inotify.max_user_instances=8192` limits to prevent `kube-proxy` crashes. You then must apply the `printolito-app-prod-secret.yaml` to the Hub cluster so ArgoCD knows how to deploy to it.
 - **Warning:** The secret file contains plaintext TLS certificates and tokens used specifically for this local PoC. In a real-world production greenfield scenario, you would dynamically generate this secret using an IaC tool (like Terraform) or a Secret Manager, rather than committing it to Git.
 | `argocd-architecture.html` | High-fidelity, interactive architecture diagram of the Hub-and-Spoke model. |
 | `argocd-deployment-plan.md` | Detailed deployment plan explaining the architecture, responsibilities (RACI), etc. |
@@ -62,7 +62,7 @@ Included in this repository are the configuration (`cluster-configs/printolito-p
    kind create cluster --name argocd-hub --config cluster-configs/hub-cluster.yaml
    kind create cluster --name laura-app-prod --config cluster-configs/prod-cluster.yaml
    kind create cluster --name laura-app-stg --config cluster-configs/stg-cluster.yaml
-   kind create cluster --name printolito-prod --config cluster-configs/printolito-cluster.yaml
+   kind create cluster --name printolito-app-prod --config cluster-configs/printolito-app-prod-cluster.yaml
    ```
    (Adjust cluster names as desired.)
 
@@ -70,7 +70,7 @@ Included in this repository are the configuration (`cluster-configs/printolito-p
    ```bash
    kubectl config view --context kind-laura-app-prod > kubeconfigs/prod-kubeconfig.yaml
    kubectl config view --context kind-laura-app-stg > kubeconfigs/stg-kubeconfig.yaml
-   kubectl config view --context kind-printolito-prod > kubeconfigs/printolito-kubeconfig.yaml
+   kubectl config view --context kind-printolito-app-prod > kubeconfigs/printolito-app-prod-kubeconfig.yaml
    ```
 
 3. **Create Cluster Secrets** in the ArgoCD namespace on the hub cluster:
