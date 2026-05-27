@@ -27,10 +27,10 @@ The initial PoC was designed to validate a strict GitOps separation of concerns 
 We have proven the model scales horizontally by introducing a completely new application (`printolito` - a WordPress setup) with its own dedicated infrastructure.
 
 ### The Printolito Integration
-1.  **New Spoke Cluster:** We provisioned `printolito-prod`, isolating its workloads entirely from the `laura-app` clusters. The cluster was successfully registered into the ArgoCD hub.
+1.  **New Spoke Cluster:** We provisioned `printolito-app-prod`, isolating its workloads entirely from the `laura-app` clusters. The cluster was successfully registered into the ArgoCD hub.
 2.  **New Source Repository:** A new Git repository (`printolito`) was created. It contains a wrapper Helm chart that vendors the official Bitnami WordPress chart (bypassing external registry proxy issues).
 3.  **Extended Configuration:** The `gitops-config` repository was expanded to include `values/printolito/prod.yaml`.
-4.  **Isolated AppProject:** In `argocd-hub`, a new AppProject (`printolito-project.yaml`) was created to ensure `printolito` can only deploy to `172.18.0.5` (the new prod cluster) inside the `printolito-ns` namespace.
+4.  **Isolated AppProject:** In `argocd-hub`, a new AppProject (`printolito-project.yaml`) was created to ensure `printolito` can only deploy to `172.18.0.5` (the new prod cluster) inside the `printolito-app` namespace.
 5.  **Dynamic ApplicationSet:** A new `appset-printolito.yaml` was applied. Even though it currently targets only a single production cluster, the `ApplicationSet` structure ensures it is future-proofed for potential staging environments.
 
 ### The resulting GitOps workflow remains identical across all teams:
