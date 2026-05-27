@@ -97,6 +97,18 @@ Included in this repository are the configuration (`cluster-configs/printolito-p
 | `argocd-hub` | Hub management repo (The "How") — contains the `AppProject` and `Application` manifests. |
 | `argocd-poc-infra` | This repo — infrastructure and auxiliary files for the PoC. |
 
+## Workload Namespace Convention
+
+Application workloads must deploy to an app-owned namespace by default, never to `default` unless the exception is explicitly documented in the hub configuration.
+
+Current workload namespaces:
+
+| Application | Namespace |
+| :--- | :--- |
+| `laura-app` | `laura-app` |
+| `nginx-app` | `nginx-app` |
+| `printolito` | `printolito-app` |
+
 ## 🛠️ Notes and Troubleshooting
 
 - During the PoC, we encountered an issue with the `applicationsets.argoproj.io` Custom Resource Definition (CRD) exceeding the Kubernetes API server's metadata size limit (262KB). As a workaround, we used explicit `Application` manifests instead of an `ApplicationSet`. The various `appset_crd*.yaml` files show our attempts to fix the CRD by stripping annotations.
